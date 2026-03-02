@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget{
       create: (context) => MemoryProvider(),
       builder: (context, child) => const MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: const HomePage(),
+        home: const TestLoginCredentials(),
       ),
     );
   }
