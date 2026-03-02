@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:travel_app/models/memory.dart';
 import 'package:travel_app/provider/memory_provider.dart';
-import '../models/memory.dart';
-
+import 'package:travel_app/pages/add_memory_page.dart';
 
 class MemoryDetailsView extends StatelessWidget {
-  final caption;
-  final imagePath;
-  final description;
+  final Memory memory;
 
   const MemoryDetailsView({
     super.key,
-    required this.caption,
-    required this.imagePath,
-    required this.description
+    required this.memory,
   });
 
   @override
@@ -30,16 +27,14 @@ class MemoryDetailsView extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           child: Column(
             children: [
-              // Image (fixed size)
               AspectRatio(
                 aspectRatio: 1 / 1,
                 child: Image.asset(
-                  imagePath,
+                  memory.localImagePath,
                   fit: BoxFit.cover,
                 ),
               ),
 
-              // Scrollable content area
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(10),
@@ -47,7 +42,7 @@ class MemoryDetailsView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        caption,
+                        memory.caption,
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -55,39 +50,37 @@ class MemoryDetailsView extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        description,
-                        style: TextStyle(
-                          color: Colors.grey[700],
-                        ),
+                        memory.description,
+                        style: TextStyle(color: Colors.grey[700]),
                       ),
                     ],
                   ),
                 ),
               ),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   IconButton(
-                      onPressed: () async {
-                            try {
-                            // Just create a test Memory object
-                            await MemoryProvider().addEntry(
-                              Memory(
-                                caption: 'Test Memory',
-                                description: 'Testing Firebase write',
-                                createdAt: DateTime.now(), id: '', assignedAt: DateTime.now(), imagePath: '',
-                              ),
-                            );
-                            print('Memory added successfully!');
-                              } catch (e) {
-                            print('Error adding memory: $e');
-                              }
-                            },
-                      icon: Icon(Icons.edit_outlined)
+                    onPressed: () {
+                      Navigator.pop(context); // close dialog
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AddMemoryPage(existing: memory),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.edit_outlined),
                   ),
+
                   IconButton(
-                      onPressed: (){},
-                      icon: Icon(Icons.delete_outline)
+                    onPressed: () {
+                      // Example: delete locally (you need to implement deleteMemoryLocal)
+                      context.read<MemoryProvider>().deleteMemoryLocal(memory.id);
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.delete_outline),
                   ),
                 ],
               ),

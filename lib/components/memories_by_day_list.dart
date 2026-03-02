@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:travel_app/components/memory_details_view.dart';
+import 'package:travel_app/models/memory.dart';
 import 'memory_snapshot.dart';
 
 class MemoryByDayList extends StatelessWidget {
-  final List currentDateMemories;
+  final List<Memory> currentDateMemories;
   final int dateUnformatted;
 
   const MemoryByDayList({
@@ -20,60 +21,41 @@ class MemoryByDayList extends StatelessWidget {
     final day = int.parse(dateStr.substring(6, 8));
 
     final date = DateTime(year, month, day);
-
     return '${_monthName(date.month)} ${date.day}, ${date.year}';
   }
 
   String _monthName(int month) {
     const months = [
       '',
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
+      'January','February','March','April','May','June',
+      'July','August','September','October','November','December'
     ];
-
     return months[month];
   }
 
-  Future<void> _showDetailsOverlay(BuildContext context, dynamic currentMemory) async {
+  Future<void> _showDetailsOverlay(BuildContext context, Memory memory) async {
     return showDialog<void>(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return MemoryDetailsView(
-          caption: currentMemory[0],
-          imagePath: currentMemory[1],
-          description: currentMemory[3],
+          memory: memory,
         );
-      }
+      },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Padding(padding: const EdgeInsets.only(top: 30.0)),
+        const Padding(padding: EdgeInsets.only(top: 30.0)),
         Padding(
-          padding: const EdgeInsets.only(
-            left: 10.0
-          ),
+          padding: const EdgeInsets.only(left: 10.0),
           child: Align(
             alignment: Alignment.centerLeft,
             child: Text(
               formatIntDateWritten(dateUnformatted),
-              style: TextStyle(
-                fontSize: 18.0,
-              ),
+              style: const TextStyle(fontSize: 18.0),
             ),
           ),
         ),
@@ -86,15 +68,11 @@ class MemoryByDayList extends StatelessWidget {
           ),
           itemCount: currentDateMemories.length,
           itemBuilder: (context, gridIndex) {
-            final currentMemory = currentDateMemories[gridIndex];
+            final Memory memory = currentDateMemories[gridIndex];
+
             return GestureDetector(
-              onTap: () {
-                _showDetailsOverlay(context, currentMemory);
-              },
-              child: MemorySnapshot(
-                caption: currentMemory[0],
-                imagePath: currentMemory[1]
-              ),
+              onTap: () => _showDetailsOverlay(context, memory),
+              child: MemorySnapshot(memory: memory)
             );
           },
         ),

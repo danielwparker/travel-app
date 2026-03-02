@@ -38,6 +38,8 @@ dependencies:
   firebase_core: ^4.4.0
   cloud_firestore: ^6.1.2
   google_fonts:
+  provider:
+  image_picker:
   flutter_map: ^8.2.2
   latlong2: ^0.9.0
 
