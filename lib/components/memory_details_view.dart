@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_app/models/memory.dart';
@@ -29,10 +31,7 @@ class MemoryDetailsView extends StatelessWidget {
             children: [
               AspectRatio(
                 aspectRatio: 1 / 1,
-                child: Image.asset(
-                  memory.localImagePath,
-                  fit: BoxFit.cover,
-                ),
+                child: _buildMemoryImage(memory),
               ),
 
               Expanded(
@@ -75,9 +74,9 @@ class MemoryDetailsView extends StatelessWidget {
                   ),
 
                   IconButton(
-                    onPressed: () {
-                      // Example: delete locally (you need to implement deleteMemoryLocal)
-                      context.read<MemoryProvider>().deleteMemoryLocal(memory.id);
+                    onPressed: () async {
+                      final provider = context.read<MemoryProvider>();
+                      await provider.deleteMemory(memory); // pass the Memory object
                       Navigator.pop(context);
                     },
                     icon: const Icon(Icons.delete_outline),
@@ -88,6 +87,32 @@ class MemoryDetailsView extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  // -----------------------------
+  // Helper method to show image
+  // -----------------------------
+  Widget _buildMemoryImage(Memory memory) {
+    if (memory.imageUrl.isNotEmpty) {
+      return Image.network(
+        memory.imageUrl,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+      );
+    }
+
+    if (memory.localImagePath.isNotEmpty && File(memory.localImagePath).existsSync()) {
+      return Image.file(
+        File(memory.localImagePath),
+        fit: BoxFit.cover,
+      );
+    }
+
+    return Container(
+      color: Colors.grey[200],
+      alignment: Alignment.center,
+      child: const Icon(Icons.image, size: 50, color: Colors.grey),
     );
   }
 }
